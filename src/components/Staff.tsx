@@ -5,7 +5,7 @@ import { NATURAL_PCS } from '../data/notes';
 type Props = {
   midi: number;
   useSharps?: boolean;
-  width?: number;
+  scale?: number; // 1 = full size, 0.65 = compact inline
 };
 
 // Staff layout constants
@@ -47,7 +47,7 @@ function staffPosToY(staffPos: number, staffBaseY: number): number {
   return bottomLineY - stepsAboveBottomLine * (STAFF_LINE_SPACING / 2);
 }
 
-export function Staff({ midi, useSharps = true }: Props) {
+export function Staff({ midi, useSharps = true, scale = 1 }: Props) {
   const pc = midi % 12;
   const staffPos = midiToStaffPosition(midi);
   const accidental = getAccidental(pc, useSharps);
@@ -91,8 +91,8 @@ export function Staff({ midi, useSharps = true }: Props) {
       <svg
         class="staff-svg"
         viewBox={`0 ${viewBoxY} ${SVG_WIDTH} ${totalHeight}`}
-        width={SVG_WIDTH}
-        height={totalHeight}
+        width={Math.round(SVG_WIDTH * scale)}
+        height={Math.round(totalHeight * scale)}
         aria-label={`Musical staff showing note`}
         role="img"
       >

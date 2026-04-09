@@ -1,32 +1,15 @@
 import { h } from 'preact';
 import { useState } from 'preact/hooks';
 import { useSignal } from '@preact/signals';
-import { settings, updateSettings, resetSettings } from '../store';
+import { settings, updateSettings } from '../store';
 import { EXERCISES } from '../data/exercises';
-import { getExerciseAccuracy, resetAllStats } from '../engine/stats';
 
 type Props = {
   onSelectExercise: (id: string) => void;
 };
 
-function AccuracyBadge({ accuracy }: { accuracy: number | null }) {
-  if (accuracy === null) return null;
-  const cls =
-    accuracy >= 80 ? 'exercise-card-accuracy accuracy-high' :
-    accuracy >= 50 ? 'exercise-card-accuracy accuracy-mid' :
-    'exercise-card-accuracy accuracy-low';
-  return <span class={cls}>{accuracy}%</span>;
-}
-
 function SettingsPanel({ onClose }: { onClose: () => void }) {
   const s = settings.value;
-
-  function handleReset() {
-    if (confirm('Reset all stats? This cannot be undone.')) {
-      resetAllStats();
-      onClose();
-    }
-  }
 
   return (
     <div class="overlay" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
@@ -96,6 +79,24 @@ function SettingsPanel({ onClose }: { onClose: () => void }) {
           </label>
         </div>
 
+        {/* Audio */}
+        <div class="settings-row">
+          <div>
+            <div class="settings-label">Sound Effects</div>
+            <div class="settings-desc">Play tones on correct / wrong answers</div>
+          </div>
+          <label class="toggle">
+            <input
+              type="checkbox"
+              checked={s.audioEnabled}
+              onChange={e => updateSettings({ audioEnabled: (e.target as HTMLInputElement).checked })}
+              aria-label="Enable sound effects"
+            />
+            <span class="toggle-track" />
+            <span class="toggle-thumb" />
+          </label>
+        </div>
+
         {/* Theme */}
         <div class="settings-row">
           <div class="settings-label">Theme</div>
@@ -119,20 +120,6 @@ function SettingsPanel({ onClose }: { onClose: () => void }) {
           </select>
         </div>
 
-        {/* Reset stats */}
-        <div class="settings-row">
-          <div>
-            <div class="settings-label">Reset Stats</div>
-            <div class="settings-desc">Clear all accuracy data</div>
-          </div>
-          <button
-            class="btn btn-secondary"
-            onClick={handleReset}
-            style={{ color: 'var(--color-error)', borderColor: 'var(--color-error)' }}
-          >
-            Reset
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -153,7 +140,7 @@ export function Landing({ onSelectExercise }: Props) {
             class="btn-icon btn-ghost"
             onClick={() => setShowSettings(true)}
             aria-label="Open settings"
-            style={{ color: 'white', fontSize: '1.5rem', background: 'rgba(255,255,255,0.15)', borderRadius: 'var(--radius-md)' }}
+            style={{ fontSize: '1.5rem' }}
           >
             ⚙️
           </button>
@@ -179,7 +166,6 @@ export function Landing({ onSelectExercise }: Props) {
 
           {/* Filtered list — skip random-mix (already shown above) */}
           {EXERCISES.filter(ex => ex.id !== 'random-mix').map(ex => {
-            const accuracy = getExerciseAccuracy(ex.id);
             return (
               <button
                 key={ex.id}
@@ -187,10 +173,7 @@ export function Landing({ onSelectExercise }: Props) {
                 onClick={() => onSelectExercise(ex.id)}
                 aria-label={`${ex.title}: ${ex.description}`}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div class="exercise-card-icon">{ex.icon || '🎵'}</div>
-                  <AccuracyBadge accuracy={accuracy} />
-                </div>
+                <div class="exercise-card-icon">{ex.icon || '🎵'}</div>
                 <div class="exercise-card-title">{ex.title}</div>
                 <div class="exercise-card-desc">{ex.description}</div>
               </button>

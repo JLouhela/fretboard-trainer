@@ -68,7 +68,7 @@ const RANDOM_MIX_PROMPTS: ExerciseConfig['prompt'][] = [
   'position-to-name',
   'position-to-name',
   'name-to-position',
-  'staff-to-name',
+  'staff-to-position',
 ];
 
 /**

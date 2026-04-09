@@ -3,9 +3,8 @@ import { useState, useEffect, useRef, useCallback } from 'preact/hooks';
 import { settings } from '../store';
 import { getExerciseById } from '../data/exercises';
 import { generateQuestions, checkAnswer, checkPositionAnswer, Question } from '../engine/question-generator';
-import { createSessionStats, recordAnswer } from '../engine/scoring';
-import { recordPositionAnswer, getExerciseStats } from '../engine/stats';
-import { playNote, playFeedback, initAudio } from '../engine/audio';
+import { SessionStats, createSessionStats, recordAnswer } from '../engine/scoring';
+import { playFeedback, initAudio } from '../engine/audio';
 import { noteAt } from '../data/tuning';
 import { Fretboard } from '../components/Fretboard';
 import { Staff } from '../components/Staff';
@@ -15,7 +14,7 @@ import { ProgressBar } from '../components/ProgressBar';
 type Props = {
   exerciseId: string;
   onBack: () => void;
-  onComplete: (stats: any, exerciseId: string) => void;
+  onComplete: (stats: SessionStats, exerciseId: string) => void;
 };
 
 type FeedbackState = {
@@ -69,11 +68,8 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
     const timeTaken = Date.now() - questionStartTime.current;
     const newStats = recordAnswer(sessionStats, true, timeTaken);
     setSessionStats(newStats);
-    recordPositionAnswer(exerciseId, q.stringIndex, q.fret, true);
-
     initAudio();
-    playFeedback(true);
-    setTimeout(() => playNote(q.midi, 500), 150);
+    playFeedback(true, q.midi);
 
     setFeedback({ type: 'correct', correctAnswer: q.correctName });
     setFlashClass('flash-correct');
@@ -89,11 +85,8 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
     const timeTaken = Date.now() - questionStartTime.current;
     const newStats = recordAnswer(sessionStats, false, timeTaken);
     setSessionStats(newStats);
-    recordPositionAnswer(exerciseId, q.stringIndex, q.fret, false);
-
     initAudio();
-    playFeedback(false);
-    setTimeout(() => playNote(q.midi, 500), 200);
+    playFeedback(false, q.midi);
 
     setFeedback({
       type: 'wrong',
@@ -117,8 +110,7 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
 
     if (qIndex >= config!.questionCount - 1) {
       // Done
-      const exStats = getExerciseStats(exerciseId);
-      onComplete({ sessionStats: newStats, exerciseStats: exStats }, exerciseId);
+      onComplete(newStats, exerciseId);
       return;
     }
 
@@ -156,9 +148,7 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
 
   const prompt = currentQ.prompt;
   const isFeedbackVisible = feedback.type !== null;
-  const isPositionPrompt = prompt === 'name-to-position' || prompt === 'staff-to-position';
-  const isNamePrompt = prompt === 'position-to-name' || prompt === 'staff-to-name';
-  const isStaffPrompt = prompt === 'staff-to-position' || prompt === 'staff-to-name';
+  const isNamePrompt = prompt === 'position-to-name';
 
   // For name-to-position and staff-to-position: show all matching positions in green
   const correctPC = noteAt(currentQ.stringIndex, currentQ.fret);
@@ -193,12 +183,12 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
       {/* Body */}
       <div class={`exercise-body ${flashClass}`}>
 
-        {/* Staff prompt */}
-        {isStaffPrompt && (
+        {/* Staff-to-position: staff is the primary prompt */}
+        {prompt === 'staff-to-position' && (
           <Staff midi={currentQ.midi} useSharps={s.useSharps} />
         )}
 
-        {/* Position-to-name: show fretboard with highlight */}
+        {/* Position-to-name: fretboard with highlighted position, answer via note buttons */}
         {prompt === 'position-to-name' && (
           <Fretboard
             strings={config.displayStrings ?? config.strings}
@@ -214,14 +204,13 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
           />
         )}
 
-        {/* Name-to-position or staff-to-position: show big note name or staff */}
-        {(prompt === 'name-to-position' || prompt === 'staff-to-position') && (
+        {/* Name-to-position: note name + staff side by side, answer by tapping fretboard */}
+        {prompt === 'name-to-position' && (
           <>
-            {prompt === 'name-to-position' && (
-              <div class="prompt-display" aria-live="polite">
-                {currentQ.correctName}
-              </div>
-            )}
+            <div class="name-prompt-row" aria-live="polite">
+              <span class="prompt-note-name">{currentQ.correctName}</span>
+              <Staff midi={currentQ.midi} useSharps={s.useSharps} scale={0.7} />
+            </div>
             <Fretboard
               strings={config.displayStrings ?? config.strings}
               fretRange={config.fretRange}
@@ -244,26 +233,34 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
           </>
         )}
 
-        {/* Feedback indicator */}
-        {isFeedbackVisible && (
-          <div
-            class={`feedback-indicator ${feedback.type === 'correct' ? 'feedback-correct' : 'feedback-wrong'}`}
-            role="status"
-            aria-live="assertive"
-          >
-            {feedback.type === 'correct' ? (
-              <>✓ Correct! — {feedback.correctAnswer}</>
-            ) : (
-              <>✗ Wrong — answer: {feedback.correctAnswer}</>
-            )}
-          </div>
+        {/* Staff-to-position fretboard (tappable) */}
+        {prompt === 'staff-to-position' && (
+          <Fretboard
+            strings={config.displayStrings ?? config.strings}
+            fretRange={config.fretRange}
+            onTap={isFeedbackVisible ? undefined : handlePositionTap}
+            showFretNumbers={s.showFretNumbers}
+            revealAnswer={
+              feedback.type === 'wrong'
+                ? { stringIndex: currentQ.stringIndex, fret: currentQ.fret, correct: true }
+                : feedback.type === 'correct'
+                ? { stringIndex: currentQ.stringIndex, fret: currentQ.fret, correct: true }
+                : undefined
+            }
+            highlightAllMatching={
+              isFeedbackVisible && feedback.type === 'correct'
+                ? correctPC
+                : undefined
+            }
+            disabled={isFeedbackVisible}
+          />
         )}
 
-        {/* Note name buttons (for position-to-name or staff-to-name) */}
+        {/* Note name buttons (for position-to-name) */}
         {isNamePrompt && (
           <NoteButtons
-            useSharps={s.useSharps || (!s.useSharps && !s.useFlats)}
-            useFlats={s.useFlats}
+            useSharps={config.includeAccidentals && (s.useSharps || (!s.useSharps && !s.useFlats))}
+            useFlats={config.includeAccidentals && s.useFlats}
             onAnswer={handleNoteAnswer}
             correctNote={feedback.type === 'correct' ? feedback.correctAnswer : undefined}
             wrongNote={feedback.type === 'wrong' ? feedback.userAnswer : undefined}
@@ -271,6 +268,17 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
             disabled={isFeedbackVisible}
           />
         )}
+
+        {/* Feedback indicator — always rendered to reserve space, no layout shift */}
+        <div
+          class={`feedback-indicator ${feedback.type === 'correct' ? 'feedback-correct' : feedback.type === 'wrong' ? 'feedback-wrong' : ''}`}
+          role="status"
+          aria-live="assertive"
+          style={{ visibility: isFeedbackVisible ? 'visible' : 'hidden' }}
+        >
+          {feedback.type === 'correct' && <>✓ Correct! — {feedback.correctAnswer}</>}
+          {feedback.type === 'wrong' && <>✗ Wrong — answer: {feedback.correctAnswer}</>}
+        </div>
       </div>
     </div>
   );

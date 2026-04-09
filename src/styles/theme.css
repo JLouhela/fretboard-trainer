@@ -1,44 +1,45 @@
 /* ===== THEME VARIABLES ===== */
+/* Palette: #A47251 · #DD9E59 · #F0D8A1 · #DCF0C3 */
 
 :root {
   /* Light theme (default) */
-  --color-bg: #f5f5f0;
-  --color-surface: #ffffff;
-  --color-surface-2: #eeeee8;
-  --color-border: #d0d0c8;
-  --color-text: #1a1a1a;
-  --color-text-muted: #666660;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
+  --color-bg: #F0D8A1;
+  --color-surface: #FDF8EE;
+  --color-surface-2: #E8CC88;
+  --color-border: #C8A060;
+  --color-text: #2A1505;
+  --color-text-muted: #6B4A28;
+  --color-primary: #A47251;
+  --color-primary-hover: #8A5C38;
   --color-primary-text: #ffffff;
-  --color-accent: #7c3aed;
-  --color-success: #16a34a;
-  --color-success-bg: #dcfce7;
-  --color-error: #dc2626;
-  --color-error-bg: #fee2e2;
-  --color-warning: #d97706;
+  --color-accent: #DD9E59;
+  --color-success: #3A7A28;
+  --color-success-bg: #DCF0C3;
+  --color-error: #C0392B;
+  --color-error-bg: #FAE0DC;
+  --color-warning: #A47251;
 
   /* Fretboard */
-  --color-fretboard-bg: #c8a96e;
-  --color-fretboard-wood: #a0724a;
-  --color-string: #b0b0b0;
-  --color-string-low: #888888;
-  --color-fret: #d4af70;
-  --color-nut: #e8e0c8;
-  --color-inlay: rgba(255,255,255,0.4);
-  --color-highlight: #f59e0b;
-  --color-highlight-correct: #22c55e;
-  --color-highlight-wrong: #ef4444;
+  --color-fretboard-bg: #A47251;
+  --color-fretboard-wood: #8A5C38;
+  --color-string: #C8A060;
+  --color-string-low: #A07840;
+  --color-fret: #DD9E59;
+  --color-nut: #F0D8A1;
+  --color-inlay: rgba(220, 240, 195, 0.55);
+  --color-highlight: #DD9E59;
+  --color-highlight-correct: #3DAA30;
+  --color-highlight-wrong: #E03030;
 
   /* Staff */
-  --color-staff-line: #1a1a1a;
-  --color-note-fill: #1a1a1a;
-  --color-clef: #1a1a1a;
+  --color-staff-line: #2A1505;
+  --color-note-fill: #2A1505;
+  --color-clef: #2A1505;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.16);
+  --shadow-sm: 0 1px 2px rgba(42,21,5,0.10);
+  --shadow-md: 0 4px 12px rgba(42,21,5,0.14);
+  --shadow-lg: 0 8px 24px rgba(42,21,5,0.18);
 
   /* Radius */
   --radius-sm: 4px;
@@ -77,75 +78,78 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  --color-bg: #0f0f1a;
-  --color-surface: #1a1a2e;
-  --color-surface-2: #252540;
-  --color-border: #333355;
-  --color-text: #e8e8f0;
-  --color-text-muted: #9090a8;
-  --color-primary: #3b82f6;
-  --color-primary-hover: #2563eb;
-  --color-primary-text: #ffffff;
-  --color-accent: #a78bfa;
-  --color-success: #4ade80;
-  --color-success-bg: #052e16;
-  --color-error: #f87171;
-  --color-error-bg: #3b0000;
-  --color-warning: #fbbf24;
+  --color-bg: #1A0D05;
+  --color-surface: #2A1A0A;
+  --color-surface-2: #3A2515;
+  --color-border: #5A3A1E;
+  --color-text: #F0D8A1;
+  --color-text-muted: #B8905A;
+  --color-primary: #DD9E59;
+  --color-primary-hover: #E8B070;
+  --color-primary-text: #1A0D05;
+  --color-accent: #F0D8A1;
+  --color-success: #6ABA50;
+  --color-success-bg: #1A3010;
+  --color-error: #E05050;
+  --color-error-bg: #380A0A;
+  --color-warning: #DD9E59;
 
-  --color-fretboard-bg: #8b6340;
-  --color-fretboard-wood: #6b4a2e;
-  --color-string: #999999;
-  --color-string-low: #777777;
-  --color-fret: #b8934e;
-  --color-nut: #c8c0a8;
-  --color-inlay: rgba(255,255,255,0.25);
-  --color-highlight: #f59e0b;
-  --color-highlight-correct: #22c55e;
-  --color-highlight-wrong: #ef4444;
+  --color-fretboard-bg: #7A5035;
+  --color-fretboard-wood: #5A3820;
+  --color-string: #9A7858;
+  --color-string-low: #7A5838;
+  --color-fret: #A47251;
+  --color-nut: #C8A060;
+  --color-inlay: rgba(240, 216, 161, 0.30);
+  --color-highlight: #DD9E59;
+  --color-highlight-correct: #4ABA38;
+  --color-highlight-wrong: #E05050;
 
-  --color-staff-line: #e8e8f0;
-  --color-note-fill: #e8e8f0;
-  --color-clef: #e8e8f0;
+  --color-staff-line: #F0D8A1;
+  --color-note-fill: #F0D8A1;
+  --color-clef: #F0D8A1;
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
 }
 
 /* Auto theme: respects system preference */
 @media (prefers-color-scheme: dark) {
   [data-theme="auto"] {
-    --color-bg: #0f0f1a;
-    --color-surface: #1a1a2e;
-    --color-surface-2: #252540;
-    --color-border: #333355;
-    --color-text: #e8e8f0;
-    --color-text-muted: #9090a8;
-    --color-primary: #3b82f6;
-    --color-primary-hover: #2563eb;
-    --color-primary-text: #ffffff;
-    --color-accent: #a78bfa;
-    --color-success: #4ade80;
-    --color-success-bg: #052e16;
-    --color-error: #f87171;
-    --color-error-bg: #3b0000;
-    --color-warning: #fbbf24;
+    --color-bg: #1A0D05;
+    --color-surface: #2A1A0A;
+    --color-surface-2: #3A2515;
+    --color-border: #5A3A1E;
+    --color-text: #F0D8A1;
+    --color-text-muted: #B8905A;
+    --color-primary: #DD9E59;
+    --color-primary-hover: #E8B070;
+    --color-primary-text: #1A0D05;
+    --color-accent: #F0D8A1;
+    --color-success: #6ABA50;
+    --color-success-bg: #1A3010;
+    --color-error: #E05050;
+    --color-error-bg: #380A0A;
+    --color-warning: #DD9E59;
 
-    --color-fretboard-bg: #8b6340;
-    --color-fretboard-wood: #6b4a2e;
-    --color-string: #999999;
-    --color-string-low: #777777;
-    --color-fret: #b8934e;
-    --color-nut: #c8c0a8;
-    --color-inlay: rgba(255,255,255,0.25);
+    --color-fretboard-bg: #7A5035;
+    --color-fretboard-wood: #5A3820;
+    --color-string: #9A7858;
+    --color-string-low: #7A5838;
+    --color-fret: #A47251;
+    --color-nut: #C8A060;
+    --color-inlay: rgba(240, 216, 161, 0.30);
+    --color-highlight: #DD9E59;
+    --color-highlight-correct: #4ABA38;
+    --color-highlight-wrong: #E05050;
 
-    --color-staff-line: #e8e8f0;
-    --color-note-fill: #e8e8f0;
-    --color-clef: #e8e8f0;
+    --color-staff-line: #F0D8A1;
+    --color-note-fill: #F0D8A1;
+    --color-clef: #F0D8A1;
 
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-    --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
-    --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+    --shadow-lg: 0 8px 24px rgba(0,0,0,0.6);
   }
 }

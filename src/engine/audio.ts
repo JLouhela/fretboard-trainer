@@ -1,6 +1,8 @@
 // Web Audio API synthesizer
 // AudioContext created lazily on first user gesture (iOS requirement)
 
+import { settings } from '../store';
+
 let ctx: AudioContext | null = null;
 
 function getCtx(): AudioContext {
@@ -18,6 +20,7 @@ function getCtx(): AudioContext {
  * Play a note at the given MIDI pitch
  */
 export function playNote(midi: number, durationMs = 500): void {
+  if (!settings.value.audioEnabled) return;
   try {
     const c = getCtx();
     const freq = 440 * Math.pow(2, (midi - 69) / 12);
@@ -43,36 +46,37 @@ export function playNote(midi: number, durationMs = 500): void {
 }
 
 /**
- * Play feedback sound: high ping for correct, low buzz for wrong
+ * Play feedback as a chord built on the current note.
+ * Correct → major chord (root + M3 + P5), strummed upward.
+ * Wrong   → minor chord (root + m3 + P5), strummed upward.
  */
-export function playFeedback(correct: boolean): void {
+export function playFeedback(correct: boolean, midi: number): void {
+  if (!settings.value.audioEnabled) return;
   try {
     const c = getCtx();
-    const freq = correct ? 880 : 220;
-    const durationMs = 120;
+    const semitones = correct ? [0, 4, 7] : [0, 3, 7];
+    const durationMs = 700;
+    const strumDelayS = 0.04; // 40 ms between each string
 
-    const osc = c.createOscillator();
-    const gain = c.createGain();
+    semitones.forEach((interval, i) => {
+      const freq = 440 * Math.pow(2, (midi + interval - 69) / 12);
+      const t0 = c.currentTime + i * strumDelayS;
 
-    if (correct) {
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0, c.currentTime);
-      gain.gain.linearRampToValueAtTime(0.3, c.currentTime + 0.005);
-      gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + durationMs / 1000);
-    } else {
-      // Distorted buzz for wrong
-      osc.type = 'sawtooth';
-      gain.gain.setValueAtTime(0, c.currentTime);
-      gain.gain.linearRampToValueAtTime(0.15, c.currentTime + 0.01);
-      gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + durationMs / 1000);
-    }
+      const osc = c.createOscillator();
+      const gain = c.createGain();
 
-    osc.frequency.value = freq;
-    osc.connect(gain);
-    gain.connect(c.destination);
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
 
-    osc.start();
-    osc.stop(c.currentTime + durationMs / 1000 + 0.05);
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.18, t0 + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0 + durationMs / 1000);
+
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(t0);
+      osc.stop(t0 + durationMs / 1000 + 0.05);
+    });
   } catch (e) {
     console.warn('Audio feedback failed:', e);
   }

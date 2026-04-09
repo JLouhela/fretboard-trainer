@@ -4,12 +4,11 @@ import { Landing } from './routes/landing';
 import { Exercise } from './routes/exercise';
 import { Result } from './routes/result';
 import { SessionStats } from './engine/scoring';
-import { ExerciseStats } from './engine/stats';
 
 type Route =
   | { name: 'landing' }
   | { name: 'exercise'; id: string }
-  | { name: 'result'; sessionStats: SessionStats; exerciseStats?: ExerciseStats; exerciseId: string };
+  | { name: 'result'; sessionStats: SessionStats; exerciseId: string };
 
 function getRouteFromHash(hash: string): Route {
   const h = hash.replace('#', '').replace(/^\//, '');
@@ -65,13 +64,8 @@ export function App() {
       <Exercise
         exerciseId={route.id}
         onBack={() => navigateTo({ name: 'landing' })}
-        onComplete={(data: { sessionStats: SessionStats; exerciseStats: ExerciseStats }, exerciseId: string) => {
-          navigateTo({
-            name: 'result',
-            sessionStats: data.sessionStats,
-            exerciseStats: data.exerciseStats,
-            exerciseId,
-          });
+        onComplete={(sessionStats: SessionStats, exerciseId: string) => {
+          navigateTo({ name: 'result', sessionStats, exerciseId });
         }}
       />
     );
@@ -81,7 +75,6 @@ export function App() {
     return (
       <Result
         sessionStats={route.sessionStats}
-        exerciseStats={route.exerciseStats}
         exerciseId={route.exerciseId}
         onRetry={() => navigateTo({ name: 'exercise', id: route.exerciseId })}
         onBack={() => navigateTo({ name: 'landing' })}

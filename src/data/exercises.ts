@@ -1,8 +1,7 @@
 export type PromptType =
   | 'position-to-name'
   | 'name-to-position'
-  | 'staff-to-position'
-  | 'staff-to-name';
+  | 'staff-to-position';
 
 export type ExerciseConfig = {
   id: string;
@@ -101,25 +100,27 @@ export const EXERCISES: ExerciseConfig[] = [
     weighting: 'spaced-repetition',
   },
   {
-    id: 'low-position-naturals',
-    title: 'Low Position (0–5)',
-    description: 'Natural notes across all strings, frets 0–5',
-    icon: '📍',
+    id: 'low-strings',
+    title: 'Low Strings',
+    description: 'Natural notes on E, A and D strings',
+    icon: '🎸',
     prompt: 'position-to-name',
-    strings: ALL_STRINGS,
-    fretRange: [1, 5],
+    strings: [0, 1, 2],
+    displayStrings: ALL_STRINGS,
+    fretRange: [1, 12],
     includeAccidentals: false,
     questionCount: 15,
     weighting: 'spaced-repetition',
   },
   {
-    id: 'mid-position-naturals',
-    title: 'Mid Position (5–12)',
-    description: 'Natural notes across all strings, frets 5–12',
-    icon: '📌',
+    id: 'high-strings',
+    title: 'High Strings',
+    description: 'Natural notes on G, B and E strings',
+    icon: '🎵',
     prompt: 'position-to-name',
-    strings: ALL_STRINGS,
-    fretRange: [5, 12],
+    strings: [3, 4, 5],
+    displayStrings: ALL_STRINGS,
+    fretRange: [1, 12],
     includeAccidentals: false,
     questionCount: 15,
     weighting: 'spaced-repetition',
@@ -154,18 +155,6 @@ export const EXERCISES: ExerciseConfig[] = [
     description: 'Read a note on the staff and find it on the fretboard',
     icon: '🎼',
     prompt: 'staff-to-position',
-    strings: ALL_STRINGS,
-    fretRange: [1, 12],
-    includeAccidentals: false,
-    questionCount: 15,
-    weighting: 'spaced-repetition',
-  },
-  {
-    id: 'staff-to-name',
-    title: 'Staff → Name',
-    description: 'Read a note on the staff and name it',
-    icon: '🎵',
-    prompt: 'staff-to-name',
     strings: ALL_STRINGS,
     fretRange: [1, 12],
     includeAccidentals: false,

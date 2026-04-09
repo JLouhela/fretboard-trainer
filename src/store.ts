@@ -11,13 +11,15 @@ export type Settings = {
   useSharps: boolean;
   useFlats: boolean;
   showFretNumbers: boolean;
+  audioEnabled: boolean;
   theme: Theme;
 };
 
 const DEFAULT_SETTINGS: Settings = {
   useSharps: true,
   useFlats: false,
-  showFretNumbers: false, // HIDDEN BY DEFAULT - pedagogical decision
+  showFretNumbers: false,
+  audioEnabled: true,
   theme: 'auto',
 };
 
