@@ -184,7 +184,7 @@ export function Landing({ onSelectExercise }: Props) {
 
       <footer class="landing-footer">
         <p>
-          <a href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/JLouhela/fretboard-trainer" target="_blank" rel="noopener noreferrer">GitHub</a>
           {' · '}
           <span>v1.0.0</span>
         </p>

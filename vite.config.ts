@@ -3,7 +3,7 @@ import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  base: './',
+  base: '/fretboard-trainer/',
   plugins: [
     preact(),
     VitePWA({
@@ -13,8 +13,8 @@ export default defineConfig({
         name: 'Fretboard Trainer',
         short_name: 'Fretboard',
         description: 'Learn guitar fretboard notes interactively',
-        theme_color: '#1a1a2e',
-        background_color: '#1a1a2e',
+        theme_color: '#A47251',
+        background_color: '#F0D8A1',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
