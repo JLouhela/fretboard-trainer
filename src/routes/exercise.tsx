@@ -6,15 +6,24 @@ import { generateQuestions, checkAnswer, checkPositionAnswer, Question } from '.
 import { SessionStats, createSessionStats, recordAnswer } from '../engine/scoring';
 import { playFeedback, initAudio } from '../engine/audio';
 import { noteAt } from '../data/tuning';
+import { SHARP_NAMES, FLAT_NAMES } from '../data/notes';
 import { Fretboard } from '../components/Fretboard';
 import { Staff } from '../components/Staff';
 import { NoteButtons } from '../components/NoteButtons';
 import { ProgressBar } from '../components/ProgressBar';
 
+export type Mistake = {
+  prompt: 'position-to-name' | 'name-to-position' | 'staff-to-position';
+  correctName: string;
+  stringIndex: number;
+  fret: number;
+  userAnswer?: string;
+};
+
 type Props = {
   exerciseId: string;
   onBack: () => void;
-  onComplete: (stats: SessionStats, exerciseId: string) => void;
+  onComplete: (stats: SessionStats, exerciseId: string, mistakes: Mistake[]) => void;
 };
 
 type FeedbackState = {
@@ -36,10 +45,12 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
   const [flashClass, setFlashClass] = useState('');
   const questionStartTime = useRef(Date.now());
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mistakesRef = useRef<Mistake[]>([]);
 
   // Generate questions once on mount
   useEffect(() => {
     if (!config) return;
+    mistakesRef.current = [];
     setQuestions(generateQuestions(config, config.questionCount, s.useSharps));
     questionStartTime.current = Date.now();
   }, []);
@@ -98,6 +109,20 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
     setFlashClass('flash-wrong');
     setTimeout(() => setFlashClass(''), 1200);
 
+    // Track mistake — resolve tapped note name for position-based answers
+    let tappedNote: string | undefined = userAnswer;
+    if (si !== undefined && fret !== undefined) {
+      const pc = noteAt(si, fret);
+      tappedNote = (s.useSharps ? SHARP_NAMES : FLAT_NAMES)[pc];
+    }
+    mistakesRef.current = [...mistakesRef.current, {
+      prompt: q.prompt,
+      correctName: q.correctName,
+      stringIndex: q.stringIndex,
+      fret: q.fret,
+      userAnswer: tappedNote,
+    }];
+
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     advanceTimer.current = setTimeout(() => {
       advance(newStats);
@@ -110,7 +135,7 @@ export function Exercise({ exerciseId, onBack, onComplete }: Props) {
 
     if (qIndex >= config!.questionCount - 1) {
       // Done
-      onComplete(newStats, exerciseId);
+      onComplete(newStats, exerciseId, mistakesRef.current);
       return;
     }
 

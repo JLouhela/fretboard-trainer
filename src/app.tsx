@@ -1,14 +1,14 @@
 import { h } from 'preact';
 import { useState, useEffect } from 'preact/hooks';
 import { Landing } from './routes/landing';
-import { Exercise } from './routes/exercise';
+import { Exercise, Mistake } from './routes/exercise';
 import { Result } from './routes/result';
 import { SessionStats } from './engine/scoring';
 
 type Route =
   | { name: 'landing' }
   | { name: 'exercise'; id: string }
-  | { name: 'result'; sessionStats: SessionStats; exerciseId: string };
+  | { name: 'result'; sessionStats: SessionStats; exerciseId: string; mistakes: Mistake[] };
 
 function getRouteFromHash(hash: string): Route {
   const h = hash.replace('#', '').replace(/^\//, '');
@@ -46,9 +46,8 @@ export function App() {
       setHash('');
     } else if (r.name === 'exercise') {
       setHash(`exercise/${r.id}`);
-    } else if (r.name === 'result') {
-      setHash('result');
     }
+    // result is ephemeral — don't change hash to avoid triggering hashchange → landing redirect
   }
 
   if (route.name === 'landing') {
@@ -64,8 +63,8 @@ export function App() {
       <Exercise
         exerciseId={route.id}
         onBack={() => navigateTo({ name: 'landing' })}
-        onComplete={(sessionStats: SessionStats, exerciseId: string) => {
-          navigateTo({ name: 'result', sessionStats, exerciseId });
+        onComplete={(sessionStats: SessionStats, exerciseId: string, mistakes: Mistake[]) => {
+          navigateTo({ name: 'result', sessionStats, exerciseId, mistakes });
         }}
       />
     );
@@ -76,6 +75,7 @@ export function App() {
       <Result
         sessionStats={route.sessionStats}
         exerciseId={route.exerciseId}
+        mistakes={route.mistakes}
         onRetry={() => navigateTo({ name: 'exercise', id: route.exerciseId })}
         onBack={() => navigateTo({ name: 'landing' })}
       />
