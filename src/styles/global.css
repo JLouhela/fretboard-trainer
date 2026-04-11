@@ -464,6 +464,27 @@ button:active:not(:disabled) {
   z-index: 100;
 }
 
+/* Compact header when phone is in landscape — short viewport height */
+@media (orientation: landscape) and (max-height: 500px) {
+  .exercise-header {
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .exercise-header-title {
+    font-size: var(--text-xs);
+  }
+
+  .exercise-counter {
+    font-size: var(--text-base);
+  }
+
+  .exercise-header-info {
+    flex-direction: row;
+    gap: var(--space-2);
+    align-items: baseline;
+  }
+}
+
 .exercise-header-info {
   flex: 1;
   display: flex;
